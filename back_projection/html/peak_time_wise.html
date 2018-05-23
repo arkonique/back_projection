@@ -1,0 +1,176 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>peak_time_wise</title><meta name="generator" content="MATLAB 8.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-07-07"><meta name="DC.source" content="peak_time_wise.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#3">Input arguments</a></li><li><a href="#4">Outputs</a></li><li><a href="#5">Finding peaks and saving data</a></li><li><a href="#6">Plotting</a></li></ul></div><pre class="codeinput"><span class="keyword">function</span> [ M ] = peak_time_wise( beam, e_lat, e_long, t_finish, ev_lat, ev_long )
+</pre><pre class="codeinput"><span class="comment">%PEAK_TIME_WISE Plots the location of the peak amplitude at each time</span>
+<span class="comment">%instance</span>
+</pre><h2>Input arguments<a name="3"></a></h2><p><b>beam</b> - stacked energy for each grid point in the time window</p><p><b>e_long</b> - Vector containing the longitudes of the grid points</p><p><b>e_lat</b> - Vector containing the latitudes of the grid points</p><p><b>t_finish</b> - time until which the peak amplitude is to be plotted</p><h2>Outputs<a name="4"></a></h2><p><b>M</b> - Stores the frames of the plot in a struct</p><h2>Finding peaks and saving data<a name="5"></a></h2><pre class="codeinput">    [n_grid n_secs] = size(beam); <span class="comment">% n_grid - number of points in the grid || n_secs - number of time points</span>
+    <span class="comment">% temp will store the data for the time instance, grid lat-long at which</span>
+    <span class="comment">% peak is maximum at that time instance and the energy at that grid</span>
+    <span class="comment">% point at that instance of time</span>
+    temp = [];
+
+    <span class="keyword">for</span> i = 1:n_secs
+        [d in] = max(beam(:,i));
+        temp = [temp;i, e_long(in), e_lat(in), d];
+    <span class="keyword">end</span>
+
+    temp(:,4) = temp(:,4)/max(temp(:,4));
+
+    save(<span class="string">'output/peak_energy.txt'</span>,<span class="string">'temp'</span>,<span class="string">'-ascii'</span>);
+
+    llong=min(e_long);
+    rlong=max(e_long);
+    llat=min(e_lat);
+    ulat=max(e_lat);
+</pre><pre class="codeoutput error">Error using peak_time_wise (line 18)
+Not enough input arguments.
+</pre><h2>Plotting<a name="6"></a></h2><pre class="codeinput">    frame = 1;
+
+    <span class="keyword">for</span> t = 1:1:t_finish
+        cla;
+        plot(temp(frame,2),temp(frame,3),<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,10,<span class="string">'MarkerFaceColor'</span>,[0.0118 0.6627 0.9569]);
+        view(0,90);
+        hold <span class="string">on</span>;
+        plot3(ev_long,ev_lat,20,<span class="string">'s'</span>,<span class="string">'MarkerSize'</span>,20,<span class="string">'MarkerFacecolor'</span>,[0.9529 0.2588 0.2078]);
+        hold <span class="string">off</span>;
+        axis([llong rlong llat ulat])
+        shading <span class="string">interp</span>
+        view(0,90);
+        box <span class="string">on</span>
+        title([<span class="string">'Energy(0.2 - 5 Hz) at seconds = '</span> num2str(frame)],<span class="string">'FontWeight'</span>,<span class="string">'bold'</span>,<span class="string">'FontSize'</span>,15,<span class="string">'FontName'</span>,<span class="string">'Times'</span>);
+        xlabel(<span class="string">'Long/degree'</span>,<span class="string">'FontWeight'</span>,<span class="string">'bold'</span>,<span class="string">'FontSize'</span>,13,<span class="string">'FontName'</span>,<span class="string">'Times'</span>);
+        ylabel(<span class="string">'Lat/degree'</span>,<span class="string">'FontWeight'</span>,<span class="string">'bold'</span>,<span class="string">'FontSize'</span>,13,<span class="string">'FontName'</span>,<span class="string">'Times'</span>);
+        drawnow
+        M(frame)  = getframe(gcf); <span class="comment">% gcf denotes the current figure</span>
+        frame=frame+1;
+<span class="keyword">end</span>
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+function [ M ] = peak_time_wise( beam, e_lat, e_long, t_finish, ev_lat, ev_long )
+%PEAK_TIME_WISE Plots the location of the peak amplitude at each time
+%instance
+%%   Input arguments
+% *beam* - stacked energy for each grid point in the time window
+%
+% *e_long* - Vector containing the longitudes of the grid points
+%
+% *e_lat* - Vector containing the latitudes of the grid points
+%
+% *t_finish* - time until which the peak amplitude is to be plotted
+%
+%% Outputs
+% *M* - Stores the frames of the plot in a struct
+
+%%  Finding peaks and saving data
+
+    [n_grid n_secs] = size(beam); % n_grid - number of points in the grid || n_secs - number of time points
+    % temp will store the data for the time instance, grid lat-long at which
+    % peak is maximum at that time instance and the energy at that grid
+    % point at that instance of time
+    temp = []; 
+    
+    for i = 1:n_secs
+        [d in] = max(beam(:,i));
+        temp = [temp;i, e_long(in), e_lat(in), d];
+    end
+    
+    temp(:,4) = temp(:,4)/max(temp(:,4));
+
+    save('output/peak_energy.txt','temp','-ascii');
+    
+    llong=min(e_long);
+    rlong=max(e_long);
+    llat=min(e_lat);
+    ulat=max(e_lat);
+%% Plotting
+
+    frame = 1;
+    
+    for t = 1:1:t_finish
+        cla;
+        plot(temp(frame,2),temp(frame,3),'o','MarkerSize',10,'MarkerFaceColor',[0.0118 0.6627 0.9569]);
+        view(0,90);
+        hold on;
+        plot3(ev_long,ev_lat,20,'s','MarkerSize',20,'MarkerFacecolor',[0.9529 0.2588 0.2078]);
+        hold off;
+        axis([llong rlong llat ulat])
+        shading interp
+        view(0,90);
+        box on
+        title(['Energy(0.2 - 5 Hz) at seconds = ' num2str(frame)],'FontWeight','bold','FontSize',15,'FontName','Times');
+        xlabel('Long/degree','FontWeight','bold','FontSize',13,'FontName','Times');
+        ylabel('Lat/degree','FontWeight','bold','FontSize',13,'FontName','Times');
+        drawnow
+        M(frame)  = getframe(gcf); % gcf denotes the current figure
+        frame=frame+1;
+end
+
+
+##### SOURCE END #####
+--></body></html>

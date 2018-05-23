@@ -1,0 +1,142 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>crosscorr_align</title><meta name="generator" content="MATLAB 8.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-03-08"><meta name="DC.source" content="crosscorr_align.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">CROSSCORR_ALIGN</a></li><li><a href="#3">Description</a></li><li><a href="#4">Syntax</a></li><li><a href="#5">Input Arguements</a></li><li><a href="#6">Output Arguments</a></li><li><a href="#7">Code</a></li></ul></div><pre class="codeinput"><span class="keyword">function</span> [r,shift,sign] = crosscorr_align(x,y,starts,ends,sampling)
+</pre><h2>CROSSCORR_ALIGN<a name="2"></a></h2><p>Cross correlation alignment function</p><h2>Description<a name="3"></a></h2><pre class="language-matlab">Finds <span class="string">the</span> <span class="string">cross</span> <span class="string">correlation</span> <span class="string">coefficient</span> <span class="string">and</span> <span class="string">the</span> <span class="string">lags.</span> <span class="string">Then</span> <span class="string">finds</span> <span class="string">the</span> <span class="string">time</span> <span class="string">delay</span> <span class="string">and</span> <span class="string">the</span> <span class="string">maxima</span> <span class="string">of</span> <span class="string">the</span> <span class="string">cross</span> <span class="string">correlation</span> <span class="string">function</span> <span class="string">and</span> <span class="string">returns</span> <span class="string">the</span> <span class="string">time</span> <span class="string">shift</span>, it's sign <span class="string">and</span> <span class="string">the</span> <span class="string">peak</span> <span class="string">value</span> <span class="string">of</span> <span class="string">the</span> <span class="string">XCF</span>
+</pre><h2>Syntax<a name="4"></a></h2><pre class="language-matlab">[r, shift, sign] = crosscorr_align(x,y,starts,ends)
+</pre><h2>Input Arguements<a name="5"></a></h2><p><b>x</b> - Matrix of the first uninvariate time series from which the 500-1000th rows from the first column are selected and the sample XCF is computed</p><p><b>y</b> - Matrix of the second uninvariate time series from which the 500-1000th rows from the first column are selected and the sample XCF is computed</p><p><b>starts</b> - Starting index of the window in which cross correlation is to be done</p><p><b>ends</b> - Trailing index of the window in which cross correlation is to be done</p><h2>Output Arguments<a name="6"></a></h2><p><b>r</b> - Peak value of the XCF indicating the point where the XCF is best aligned</p><p><b>shift</b> - Time delay between the two signals determined by the arguement of maxima of the cross correlation</p><p><b>sign</b> - Sign of the polarity, indicating whether the time series is to be shifted forward or backward in time</p><h2>Code<a name="7"></a></h2><pre class="codeinput">sign = 0;
+[R,dt] = crosscorr(x(starts:ends,1),y(starts:ends,1)); <span class="comment">%R - XCF, dt - Time lag</span>
+[r,index] = max(abs(R)); <span class="comment">%r stores the peak value of the XCF and index stores the index for the peak value</span>
+shift = dt(index) / sampling;
+
+t = 0;
+t = R(index);
+
+<span class="keyword">if</span> (t &lt; 0)
+    sign = -1;
+
+<span class="keyword">else</span>
+    sign = 1;
+<span class="keyword">end</span>
+</pre><pre class="codeoutput error">Error using crosscorr_align (line 36)
+Not enough input arguments.
+</pre><pre class="codeinput"><span class="keyword">end</span>
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+function [r,shift,sign] = crosscorr_align(x,y,starts,ends,sampling)
+%% CROSSCORR_ALIGN
+% Cross correlation alignment function
+%
+%% Description
+%
+%   Finds the cross correlation coefficient and the lags. Then finds the time delay and the maxima of the cross correlation function and returns the time shift, it's sign and the peak value of the XCF 
+% 
+%% Syntax
+%
+%   [r, shift, sign] = crosscorr_align(x,y,starts,ends)
+%
+%% Input Arguements
+% 
+% *x* - Matrix of the first uninvariate time series from which the 500-1000th rows from the first column are selected and the sample XCF is computed
+%
+% *y* - Matrix of the second uninvariate time series from which the 500-1000th rows from the first column are selected and the sample XCF is computed
+%
+% *starts* - Starting index of the window in which cross correlation is to
+% be done
+%
+% *ends* - Trailing index of the window in which cross correlation is to
+% be done
+%% Output Arguments
+% 
+% *r* - Peak value of the XCF indicating the point where the XCF is best aligned
+%
+% *shift* - Time delay between the two signals determined by the arguement of maxima of the cross correlation 
+%
+% *sign* - Sign of the polarity, indicating whether the time series is to be shifted forward or backward in time
+%
+%% Code
+%
+
+sign = 0;
+[R,dt] = crosscorr(x(starts:ends,1),y(starts:ends,1)); %R - XCF, dt - Time lag
+[r,index] = max(abs(R)); %r stores the peak value of the XCF and index stores the index for the peak value
+shift = dt(index) / sampling;
+
+t = 0;
+t = R(index);
+
+if (t < 0)
+    sign = -1;
+    
+else
+    sign = 1;
+end
+
+end
+##### SOURCE END #####
+--></body></html>

@@ -1,0 +1,237 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>net_stack_align</title><meta name="generator" content="MATLAB 8.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-02-28"><meta name="DC.source" content="net_stack_align.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">Alignment has been done</a></li><li><a href="#3">Calculating the energy for each grid point</a></li></ul></div><pre class="codeinput">close <span class="string">all</span>
+clear <span class="string">all</span>
+
+AU = load(<span class="string">'beam_0.2_5Hz_AU.txt'</span>);
+EU = load(<span class="string">'beam_0.2_5Hz_EU.txt'</span>);
+
+index = epicenter_index(32,35,73,75,34.5239,73.64,0.02); <span class="comment">%epicentre index. Found using epicentre_index.m function</span>
+
+win = 10;
+
+Sign = [];
+corr = [];
+dt = [];
+
+<span class="comment">%read crosscorr_align for usage of crosscorr and lines 16 to 25</span>
+[R t] = crosscorr(AU(index,1:win)'./max(AU(index,1:win))',EU(index,1:win)'./max(EU(index,1:win))'); <span class="comment">% R -&gt; XCF, t-&gt; time lag</span>
+[r dt] = max(abs(R));
+
+r = R(dt);
+
+<span class="keyword">if</span> (r &lt; 0)
+    sign = -1;
+<span class="keyword">else</span>
+    sign  = 1;
+<span class="keyword">end</span>
+
+e_lat = [];
+e_long = [];
+
+<span class="keyword">for</span> lat = 32:0.02:35
+    <span class="keyword">for</span> long = 73:0.02:75
+        e_lat = [e_lat;lat];
+        e_long = [e_long;long];
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+[m n] = size(AU);
+
+n = n-dt;
+AU_corr = [];
+EU_corr = [];
+
+<span class="keyword">for</span> i = 1:1:m <span class="comment">%cuts part of the seismogram (cut_window was not working)</span>
+    <span class="comment">% We are taking AU as the reference trace here, so time lag is zero for AU.</span>
+    <span class="comment">% Hence we will have all the elements from AU, except those which don't</span>
+    <span class="comment">% correspond to any value for EU</span>
+    AU_corr(i,1:n) = AU(i,1:n);
+    <span class="comment">% EU has a time lag dt, so we are taking the elements starting from dt till the end</span>
+    EU_corr(i,1:n) = EU(i,dt:dt+n-1)*sign;
+<span class="keyword">end</span>
+</pre><h2>Alignment has been done<a name="2"></a></h2><p>This part is just for visualisation</p><pre class="codeinput">subplot(2,1,1);
+plot( AU_corr(index,:)./max( AU_corr(index,:) ),<span class="string">'b'</span>,<span class="string">'LineWidth'</span>,1);
+hold <span class="string">on</span>
+plot( EU_corr(index,:)./max( EU_corr(index,:)),<span class="string">'r'</span>,<span class="string">'LineWidth'</span>,1);
+legend(<span class="string">'AU'</span>,<span class="string">'EU'</span>)
+
+xlabel(<span class="string">'Time(seconds)'</span>,<span class="string">'FontWeight'</span>,<span class="string">'bold'</span>,<span class="string">'FontSize'</span>,13,<span class="string">'FontName'</span>,<span class="string">'Times'</span>);
+ylabel(<span class="string">'Relative Amplitude'</span>,<span class="string">'FontWeight'</span>,<span class="string">'bold'</span>,<span class="string">'FontSize'</span>,13,<span class="string">'FontName'</span>,<span class="string">'Times'</span>);
+title([<span class="string">'STF from differet netwroks'</span>],<span class="string">'FontWeight'</span>,<span class="string">'bold'</span>,<span class="string">'FontSize'</span>,15,<span class="string">'FontName'</span>,<span class="string">'Times'</span>);
+
+
+subplot(2,1,2)
+plot( AU(index,:)./max( AU(index,:) ),<span class="string">'b'</span>,<span class="string">'LineWidth'</span>,1);
+hold <span class="string">on</span>
+plot( EU(index,:)./max( EU(index,:)),<span class="string">'r'</span>,<span class="string">'LineWidth'</span>,1);
+
+legend(<span class="string">'AU'</span>,<span class="string">'EU'</span>)
+
+xlabel(<span class="string">'Time(seconds)'</span>,<span class="string">'FontWeight'</span>,<span class="string">'bold'</span>,<span class="string">'FontSize'</span>,13,<span class="string">'FontName'</span>,<span class="string">'Times'</span>);
+ylabel(<span class="string">'Relative Amplitude'</span>,<span class="string">'FontWeight'</span>,<span class="string">'bold'</span>,<span class="string">'FontSize'</span>,13,<span class="string">'FontName'</span>,<span class="string">'Times'</span>);
+title([<span class="string">'STF from different netwroks'</span>],<span class="string">'FontWeight'</span>,<span class="string">'bold'</span>,<span class="string">'FontSize'</span>,15,<span class="string">'FontName'</span>,<span class="string">'Times'</span>);
+</pre><img vspace="5" hspace="5" src="net_stack_align_01.png" alt=""> <h2>Calculating the energy for each grid point<a name="3"></a></h2><pre class="codeinput">beam_sum_corr = (AU_corr.^2)+(EU_corr.^2); <span class="comment">% we are squaring the amplitude to convert it to energy</span>
+h=fspecial(<span class="string">'average'</span>,[1 1]); <span class="comment">%smoothing the beam</span>
+b_corr=filter2(h,beam_sum_corr);
+
+beam_sum_uncorr= (AU.^2)+(EU.^2);
+h=fspecial(<span class="string">'average'</span>,[1 1]);
+b_uncorr=filter2(h,beam_sum_uncorr);
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+close all
+clear all
+
+AU = load('beam_0.2_5Hz_AU.txt');
+EU = load('beam_0.2_5Hz_EU.txt');
+
+index = epicenter_index(32,35,73,75,34.5239,73.64,0.02); %epicentre index. Found using epicentre_index.m function
+
+win = 10;
+
+Sign = [];
+corr = [];
+dt = [];
+
+%read crosscorr_align for usage of crosscorr and lines 16 to 25
+[R t] = crosscorr(AU(index,1:win)'./max(AU(index,1:win))',EU(index,1:win)'./max(EU(index,1:win))'); % R -> XCF, t-> time lag
+[r dt] = max(abs(R));
+
+r = R(dt);
+
+if (r < 0)
+    sign = -1;
+else
+    sign  = 1;
+end
+
+e_lat = [];
+e_long = [];
+
+for lat = 32:0.02:35
+    for long = 73:0.02:75
+        e_lat = [e_lat;lat];
+        e_long = [e_long;long];
+    end
+end
+
+[m n] = size(AU);
+
+n = n-dt;
+AU_corr = [];
+EU_corr = [];
+
+for i = 1:1:m %cuts part of the seismogram (cut_window was not working)
+    % We are taking AU as the reference trace here, so time lag is zero for AU.
+    % Hence we will have all the elements from AU, except those which don't
+    % correspond to any value for EU
+    AU_corr(i,1:n) = AU(i,1:n);
+    % EU has a time lag dt, so we are taking the elements starting from dt till the end 
+    EU_corr(i,1:n) = EU(i,dt:dt+n-1)*sign;
+end
+
+%% Alignment has been done
+% This part is just for visualisation
+subplot(2,1,1);
+plot( AU_corr(index,:)./max( AU_corr(index,:) ),'b','LineWidth',1);
+hold on
+plot( EU_corr(index,:)./max( EU_corr(index,:)),'r','LineWidth',1);
+legend('AU','EU')
+
+xlabel('Time(seconds)','FontWeight','bold','FontSize',13,'FontName','Times');
+ylabel('Relative Amplitude','FontWeight','bold','FontSize',13,'FontName','Times');
+title(['STF from differet netwroks'],'FontWeight','bold','FontSize',15,'FontName','Times');
+    
+
+subplot(2,1,2)
+plot( AU(index,:)./max( AU(index,:) ),'b','LineWidth',1);
+hold on
+plot( EU(index,:)./max( EU(index,:)),'r','LineWidth',1);
+
+legend('AU','EU')
+
+xlabel('Time(seconds)','FontWeight','bold','FontSize',13,'FontName','Times');
+ylabel('Relative Amplitude','FontWeight','bold','FontSize',13,'FontName','Times');
+title(['STF from different netwroks'],'FontWeight','bold','FontSize',15,'FontName','Times');
+
+%% Calculating the energy for each grid point
+
+beam_sum_corr = (AU_corr.^2)+(EU_corr.^2); % we are squaring the amplitude to convert it to energy
+h=fspecial('average',[1 1]); %smoothing the beam
+b_corr=filter2(h,beam_sum_corr);
+
+beam_sum_uncorr= (AU.^2)+(EU.^2);
+h=fspecial('average',[1 1]);
+b_uncorr=filter2(h,beam_sum_uncorr);
+
+
+
+##### SOURCE END #####
+--></body></html>

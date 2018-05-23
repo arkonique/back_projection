@@ -1,0 +1,155 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>cumulative_plot</title><meta name="generator" content="MATLAB 8.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-02-28"><meta name="DC.source" content="cumulative_plot.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#3">Input Arguments</a></li><li><a href="#4">Code</a></li></ul></div><pre class="codeinput"><span class="keyword">function</span> [b] = cumulative_plot( beam, e_lat,e_long, t_start, t_end)
+</pre><pre class="codeinput"><span class="comment">%CUMULATIVE_PLOT Plots the cumulative energy of the earthquake</span>
+</pre><h2>Input Arguments<a name="3"></a></h2><p><b>beam</b> - Energy for each time increment for each grid point</p><p><b>e_lat</b> - Vector containing Latitudes of the grid points</p><p><b>e_long</b> - Vector containing Longitudes of the grid points</p><p><b>t_start</b> - starting time</p><p><b>t_end</b> - ending time</p><p><b>t_start</b> and <b>t_end</b> define the time window within which the energy is to be considered</p><h2>Code<a name="4"></a></h2><pre class="codeinput">b = [];
+b = sum(beam(:,t_start:t_end)')'; <span class="comment">% Adding the energy within the time window</span>
+b = b./max(b); <span class="comment">% Normalising</span>
+</pre><pre class="codeoutput error">Error using cumulative_plot (line 20)
+Not enough input arguments.
+</pre><p>Saving the data to file</p><pre class="codeinput">fn = <span class="string">'cumulative_energy.txt'</span>;
+f = fopen(fn,<span class="string">'w'</span>);
+
+<span class="keyword">for</span> i=1:length(e_lat)
+    fprintf(f,<span class="string">'%f %f %f \n'</span>,e_long(i),e_lat(i),b(i));
+<span class="keyword">end</span>
+
+fclose(f);
+</pre><p>Plotting the data</p><pre class="codeinput">energy_surf = fit([e_long,e_lat],b, <span class="string">'loess'</span>);
+plot(energy_surf);
+hold <span class="string">on</span>;
+plot3(73.6400 ,34.5239 ,20,<span class="string">'s'</span>,<span class="string">'MarkerSize'</span>,20,<span class="string">'MarkerEdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'MarkerFaceColor'</span>,<span class="string">'k'</span>)
+hold <span class="string">on</span>;
+plot3(94.709,23.03,20,<span class="string">'s'</span>,<span class="string">'MarkerSize'</span>,20,<span class="string">'MarkerEdgeColor'</span>,<span class="string">'b'</span>,<span class="string">'MarkerFaceColor'</span>,<span class="string">'b'</span>)
+shading <span class="string">interp</span>
+alpha(1)
+view(0,90)
+box <span class="string">off</span>
+colorbar
+title([<span class="string">'Cumulative Energy(0.05 - 0.2 Hz) at seconds = '</span> num2str(t_start )],<span class="string">'FontWeight'</span>,<span class="string">'bold'</span>,<span class="string">'FontSize'</span>,15,<span class="string">'FontName'</span>,<span class="string">'Times'</span>);
+xlabel(<span class="string">'Long/degree'</span>,<span class="string">'FontWeight'</span>,<span class="string">'bold'</span>,<span class="string">'FontSize'</span>,13,<span class="string">'FontName'</span>,<span class="string">'Times'</span>);
+ylabel(<span class="string">'Lat/degree'</span>,<span class="string">'FontWeight'</span>,<span class="string">'bold'</span>,<span class="string">'FontSize'</span>,13,<span class="string">'FontName'</span>,<span class="string">'Times'</span>);
+</pre><pre class="codeinput"><span class="keyword">end</span>
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+function [b] = cumulative_plot( beam, e_lat,e_long, t_start, t_end)
+%CUMULATIVE_PLOT Plots the cumulative energy of the earthquake
+%% Input Arguments
+% *beam* - Energy for each time increment for each grid point
+%
+% *e_lat* - Vector containing Latitudes of the grid points
+%
+% *e_long* - Vector containing Longitudes of the grid points
+%
+% *t_start* - starting time
+%
+% *t_end* - ending time
+%
+% *t_start* and *t_end* define the time window within which the energy is
+% to be considered
+
+%% Code
+
+b = [];
+b = sum(beam(:,t_start:t_end)')'; % Adding the energy within the time window
+b = b./max(b); % Normalising
+
+%%
+% Saving the data to file
+
+fn = 'cumulative_energy.txt';
+f = fopen(fn,'w');
+
+for i=1:length(e_lat)
+    fprintf(f,'%f %f %f \n',e_long(i),e_lat(i),b(i));
+end
+
+fclose(f);
+
+%%
+% Plotting the data
+
+energy_surf = fit([e_long,e_lat],b, 'loess');
+plot(energy_surf);
+hold on;
+plot3(73.6400 ,34.5239 ,20,'s','MarkerSize',20,'MarkerEdgeColor','k','MarkerFaceColor','k')
+hold on;
+plot3(94.709,23.03,20,'s','MarkerSize',20,'MarkerEdgeColor','b','MarkerFaceColor','b')
+shading interp
+alpha(1)
+view(0,90)
+box off
+colorbar
+title(['Cumulative Energy(0.05 - 0.2 Hz) at seconds = ' num2str(t_start )],'FontWeight','bold','FontSize',15,'FontName','Times');
+xlabel('Long/degree','FontWeight','bold','FontSize',13,'FontName','Times');
+ylabel('Lat/degree','FontWeight','bold','FontSize',13,'FontName','Times');
+
+end
+##### SOURCE END #####
+--></body></html>
